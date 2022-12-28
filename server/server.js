@@ -18,6 +18,18 @@ app.get('/players/list', async (req, res) => {
   res.send(results);
 })
 
+app.get('/players/*/properties', async (req, res) => {
+  let results = await database.query(`SELECT propName, price, color FROM Ownership NATURAL JOIN Properties WHERE playerName="${req.params[0]}" ORDER BY price;`);
+  res.set('Access-Control-Allow-Origin', '*');
+  res.send(results);
+});
+
+app.get('/events', async (req, res) => {
+  let results = await database.query(`SELECT * FROM Events ORDER BY time`);
+  res.set('Access-Control-Allow-Origin', '*');
+  res.send(results);
+});
+
 app.post('/players/add', async (req, res) => {
   await database.query(`INSERT INTO Players VALUES("${req.body.name}", 15000000)`);
   res.set('Access-Control-Allow-Origin', '*');

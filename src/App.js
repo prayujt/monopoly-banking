@@ -2,17 +2,17 @@ import React from 'react';
 import { Col, Row } from 'antd';
 
 import Players from './components/Players';
-import PropertyMap from './components/PropertyMap'
+import Events from './components/Events'
 
 const App = () => (
 
   <div className="App">
     <Row>
-      <Col span={8}>
+      <Col span={18}>
         <Players/>
       </Col>
-      <Col span={16}>
-        <PropertyMap/>
+      <Col span={6}>
+        <Events/>
       </Col>
     </Row>
   </div>
