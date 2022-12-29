@@ -1,5 +1,5 @@
 import { React, useState, useEffect } from 'react';
-import { Statistic } from 'antd';
+import { Card, Statistic, Row, Col } from 'antd';
 
 import PropertyList from './PropertyList';
 
@@ -9,8 +9,18 @@ const PlayerCard = (player) => {
     return (
         <div>
             <h1>{player.name}</h1>
-            <Statistic title="Account Balance" value={`$${player.balance.toLocaleString('en-US')}`}/>
-            <PropertyList name={player.name}/>
+            <Row>
+                <Col span={12}>
+                    <Card>
+                        <Statistic title="Account Balance" value={`$${player.balance.toLocaleString('en-US')}`}/>
+                    </Card>
+                </Col>
+                <Col span={12}>
+                    <Card>
+                        <PropertyList name={player.name}/>
+                    </Card>
+                </Col>
+            </Row>
         </div>
     )
 }

@@ -1,6 +1,6 @@
 import { React, useState, useEffect } from 'react';
 import { UserOutlined } from '@ant-design/icons';
-import { List, Divider } from 'antd';
+import { Divider, List } from 'antd';
 
 import 'antd/dist/reset.css';
 
@@ -11,7 +11,7 @@ const Players = () => {
 
     useEffect(() => {
         setTimeout(() => {
-            fetch(`${process.env.REACT_APP_SERVER_HOST}/players/list`)
+            fetch(`${process.env.REACT_APP_SERVER_HOST}/players`)
             .then((response)=>response.json())
             .then((responseData)=>
             {
@@ -21,13 +21,13 @@ const Players = () => {
     });
 
     return (
-        <div>
+        <div >
             <List
                 itemLayout="horizontal"
                 dataSource={players}
                 renderItem={(item) => (
                     <div>
-                        <Divider />
+                        <Divider/>
                         <PlayerCard name={item.name} balance={item.balance}/>
                     </div>
                     /*     {/\* <Button *\/} */

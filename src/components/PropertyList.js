@@ -1,5 +1,13 @@
 import { React, useState, useEffect } from 'react';
-import { Avatar, List } from 'antd';
+import { Avatar, List, Tag } from 'antd';
+
+const MortgageEval = (props) => {
+  if (props.property.mortgaged === 1) {
+    return (
+      <Tag color="error">mortgaged</Tag>
+    );
+  }
+}
 
 const PropertyList = (player) => {
     const [properties, setProperties] = useState([]);
@@ -29,7 +37,8 @@ const PropertyList = (player) => {
               <List.Item.Meta
                 avatar={<Avatar style={{ backgroundColor: property.color }} />}
                 title={property.propName}
-                description={`$${property.price.toLocaleString('en-US')}`}
+                /* description={`$${property.price.toLocaleString('en-US')}`} */
+                description=<MortgageEval property={property}/>
               />
             </List.Item>
           )}
