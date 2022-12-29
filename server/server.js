@@ -47,7 +47,6 @@ app.get('/properties/owned', async (req, res) => {
 app.get('/properties/unowned', async (req, res) => {
   let results = await database.query("SELECT Properties.propName, price FROM Properties LEFT JOIN Ownership ON Ownership.propName = Properties.propName WHERE Ownership.propName IS NULL;");
   res.set('Access-Control-Allow-Origin', '*');
-  console.log(results);
   res.send(results);
 })
 
@@ -118,6 +117,10 @@ app.post('/players/*/pay_rent', async (req, res) => {
   let numHouses = propertyData[0]['numHouses'];
   let rent = 0;
 
+  if (req.body.mortgaged === 1) {
+    res.send(false);
+    return;
+  }
   if (req.body.diceRoll !== null) {
     let results = await database.query(`SELECT COUNT(propName) count FROM Ownership NATURAL JOIN Properties WHERE playerName="${propertyData[0]['playerName']}" AND propName LIKE '%Service%';`);
     if (results[0]['count'] === 1) rent = req.body.diceRoll * 40000
@@ -183,7 +186,6 @@ app.post('/trade', async (req, res) => {
   let player1Name = req.body.player1Name;
   let player2Name = req.body.player2Name;
   let amount = req.body.amount;
-  console.log(player1Properties, player2Properties);
 
   player1Properties.forEach(async (property) => {
     await database.query(`UPDATE Ownership SET playerName="${player2Name}" WHERE propName="${property}"`);
