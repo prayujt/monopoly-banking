@@ -21,6 +21,11 @@ const addEvent = async (event, color) => {
   return result;
 }
 
+let lastEvent = {
+  players: {},
+  properties: []
+}
+
 // Get Requests
 
 app.get('/reset', async (req, res) => {
@@ -74,11 +79,22 @@ app.get('/events', async (req, res) => {
   res.send(results);
 });
 
+app.get('/events/previous', async (req, res) => {
+  res.set('Access-Control-Allow-Origin', '*');
+  res.send(lastEvent);
+});
+
 
 // Post Requests
 
 app.post('/players/add', async (req, res) => {
   await database.query(`INSERT INTO Players VALUES("${req.body.name}", 15000000);`);
+  lastEvent = {
+    players: {
+      [req.body.name]: 15000000
+    },
+    properties: []
+  }
   res.set('Access-Control-Allow-Origin', '*');
   res.send(true);
 });
@@ -86,6 +102,13 @@ app.post('/players/add', async (req, res) => {
 app.post('/players/add_money', async (req, res) => {
   await database.query(changeMoneyAmountQuery(req.body.name, req.body.amount));
   await addEvent(`${req.body.name} had $${Math.abs(req.body.amount).toLocaleString('en-US')} ${req.body.amount <= 0 ? 'subtracted from' : 'added to'} his account.`, `${req.body.amount <= 0 ? 'red' : 'green'}`);
+  lastEvent = {
+    players: {
+      [req.body.name]: req.body.amount
+    },
+    properties: []
+  }
+
   res.set('Access-Control-Allow-Origin', '*');
   res.send(true);
 });
@@ -93,6 +116,12 @@ app.post('/players/add_money', async (req, res) => {
 app.post('/players/cross_go', async (req, res) => {
   await database.query(changeMoneyAmountQuery(req.body.name, 2000000));
   await addEvent(`${req.body.name} crossed go.`, 'green');
+  lastEvent = {
+    players: {
+      [req.body.name]: 2000000
+    },
+    properties: []
+  }
   res.set('Access-Control-Allow-Origin', '*');
   res.send(true);
 });
@@ -104,6 +133,12 @@ app.post('/players/buy_property', async (req, res) => {
     await database.query(`INSERT INTO Ownership VALUES("${req.body.propertyName}", "${req.body.name}", 0, false);`);
     await database.query(changeMoneyAmountQuery(req.body.name, -row[0]['price']));
     await addEvent(`${req.body.name} bought ${req.body.propertyName} for $${Math.abs(row[0]['price']).toLocaleString('en-US')}.`, 'red');
+    lastEvent = {
+      players: {
+        [req.body.name]: -row[0]['price']
+      },
+      properties: [req.body.propertyName]
+    }
     res.send(true);
   }
   catch {
@@ -144,9 +179,17 @@ app.post('/players/*/pay_rent', async (req, res) => {
   }
   catch {
     res.send(false);
+    return;
   }
 
   await addEvent(`${renter} paid ${owner} $${rent.toLocaleString('en-US')} in rent at ${req.body.propertyName}.`, 'orange');
+  lastEvent = {
+    players: {
+      [renter]: -rent,
+      [owner]: rent
+    },
+    properties: [req.body.propertyName]
+  }
 
   res.send(true);
 });
@@ -161,6 +204,12 @@ app.post('/properties/*/houses', async (req, res) => {
   await database.query(changeMoneyAmountQuery(player, -price));
 
   await addEvent(`${player} ${req.body.numHouses > 0 ? 'bought' : 'sold'} ${Math.abs(req.body.numHouses)} houses on ${req.params[0]} for $${Math.abs(price).toLocaleString('en-US')}.`, 'brown');
+  lastEvent = {
+    players: {
+      [player]: -price
+    },
+    properties: [req.params[0]]
+  }
   res.set('Access-Control-Allow-Origin', '*');
   res.send(true);
 });
@@ -171,11 +220,18 @@ app.post('/properties/*/mortgage', async (req, res) => {
   await database.query(`UPDATE Ownership SET mortgaged=${1-mortgaged} WHERE propName="${req.params[0]}"`);
 
   let player = propertyData[0]['playerName'];
-  let value = (mortgaged === 0) ? propertyData[0]['mortgageValue'] : 1.1 * propertyData[0]['mortgageValue'];
+  let value = (mortgaged === 0) ? propertyData[0]['mortgageValue'] : Math.round(1.1 * propertyData[0]['mortgageValue']);
 
   await database.query(changeMoneyAmountQuery(player, (mortgaged === 0) ? value : -value));
 
   await addEvent(`${player} ${mortgaged === 0 ? 'mortgaged' : 'un-mortgaged'} ${req.params[0]} for $${Math.abs(value).toLocaleString('en-US')}.`, 'brown');
+
+  lastEvent = {
+    players: {
+      [player]: (mortgaged === 0) ? value : -value
+    },
+    properties: [req.params[0]]
+  }
   res.set('Access-Control-Allow-Origin', '*');
   res.send(true);
 });
@@ -199,6 +255,14 @@ app.post('/trade', async (req, res) => {
   await database.query(changeMoneyAmountQuery(player2Name, -amount));
 
   await addEvent(`${player1Name} traded ${player1Properties.join()} ${(amount < 0) ? "and $" + Math.abs(amount).toLocaleString('en-US') : ""} to ${player2Name} for ${(player2Properties.length !== 0) ? player2Properties.join(): ""}${(amount >= 0 && player2Properties.length !== 0) ? " and $" + Math.abs(amount).toLocaleString('en-US') : ""}${(amount >= 0 && player2Properties.length === 0) ? "$" + Math.abs(amount).toLocaleString('en-US') : ""}.`, 'blue');
+  lastEvent = {
+    players: {
+      [player1Name]: amount,
+      [player2Name]: -amount
+    },
+    properties: [player1Properties + player2Properties]
+  }
+
   res.set('Access-Control-Allow-Origin', '*');
   res.send(true);
 });

@@ -7,14 +7,16 @@ const Events = () => {
     const [events, setEvents] = useState([]);
 
     useEffect(() => {
-        setTimeout(() => {
+        let timeout = setTimeout(() => {
             fetch(`${process.env.REACT_APP_SERVER_HOST}/events`)
             .then((response)=>response.json())
             .then((responseData)=>
             {
                 setEvents(responseData);
             });
-        }, 250);
+        }, 500);
+
+        return () => clearTimeout(timeout);
     });
 
   return (
