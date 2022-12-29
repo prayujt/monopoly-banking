@@ -1,4 +1,4 @@
-import { React, useState, useEffect } from 'react';
+import { React } from 'react';
 import { Card, Statistic, Row, Col } from 'antd';
 
 import PropertyList from './PropertyList';

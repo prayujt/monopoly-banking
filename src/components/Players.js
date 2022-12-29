@@ -1,5 +1,4 @@
 import { React, useState, useEffect } from 'react';
-import { UserOutlined } from '@ant-design/icons';
 import { Divider, List } from 'antd';
 
 import 'antd/dist/reset.css';
