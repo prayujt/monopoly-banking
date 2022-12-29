@@ -1,5 +1,5 @@
 import { React, useState, useEffect } from 'react';
-import { Divider, List, Row, Col } from 'antd';
+import { Row, Col } from 'antd';
 
 import 'antd/dist/reset.css';
 
@@ -28,8 +28,6 @@ const Players = () => {
                         })
                     }
                 }
-
-                // console.log(newPlayers);
                 setPlayers(newPlayers);
             });
         }, 250);
