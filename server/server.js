@@ -266,7 +266,7 @@ app.post('/trade', async (req, res) => {
       [player1Name]: amount,
       [player2Name]: -amount
     },
-    properties: [player1Properties + player2Properties]
+    properties: player1Properties.concat(player2Properties)
   }
 
   res.set('Access-Control-Allow-Origin', '*');

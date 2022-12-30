@@ -117,7 +117,7 @@ while True:
         print('\nPlayer 1:')
         stop = False
         while stop is False:
-            property_ = match_property()
+            property_ = match_property(owned=True)
             if property_ is None:
                 stop = True
             else:
@@ -128,7 +128,7 @@ while True:
         print('\nPlayer 2:')
         stop = False
         while stop is False:
-            property_ = match_property()
+            property_ = match_property(owned=True)
             if property_ is None:
                 stop = True
             else:

@@ -17,8 +17,24 @@ const PropertyIcon = (props) => {
   else return <Avatar style={{ backgroundColor: props.property.color }}/>;
 }
 
+const Property = (props) => {
+  let color = props.event.properties.indexOf(props.property.propName) !== -1 ? "#EFEEEC" : "#FFFFFF"
+  return (
+    <List.Item style={{ backgroundColor: color }}>
+      <List.Item.Meta
+        avatar=<PropertyIcon property={props.property}/>
+        /* avatar={<Avatar style={{ backgroundColor: property.color }} />} */
+        title={props.property.propName}
+        /* description={`$${property.price.toLocaleString('en-US')}`} */
+        description=<MortgageEval property={props.property}/>
+      />
+    </List.Item>
+  );
+}
+
 const PropertyList = (player) => {
     const [properties, setProperties] = useState([]);
+    const [event, setEvent] = useState([]);
 
     useEffect(() => {
         let timeout = setTimeout(() => {
@@ -27,6 +43,12 @@ const PropertyList = (player) => {
             .then((responseData)=>
             {
                 setProperties(responseData);
+            });
+            fetch(`${process.env.REACT_APP_SERVER_HOST}/events/previous`)
+            .then((response)=>response.json())
+            .then((responseData)=>
+            {
+                setEvent(responseData);
             });
         }, 500);
       return () => clearTimeout(timeout);
@@ -37,22 +59,13 @@ const PropertyList = (player) => {
     //     <h3>No properties found</h3>
     //   )
     // }
-
     return (
       <List
           size="small"
           itemLayout="horizontal"
           dataSource={properties}
           renderItem={(property) => (
-            <List.Item>
-              <List.Item.Meta
-                avatar=<PropertyIcon property={property}/>
-                /* avatar={<Avatar style={{ backgroundColor: property.color }} />} */
-                title={property.propName}
-                /* description={`$${property.price.toLocaleString('en-US')}`} */
-                description=<MortgageEval property={property}/>
-              />
-            </List.Item>
+            <Property event={event} property={property}/>
           )}
         />
     );
