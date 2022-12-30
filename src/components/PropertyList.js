@@ -1,5 +1,6 @@
 import { React, useState, useEffect } from 'react';
 import { Avatar, List, Tag } from 'antd';
+import { RocketOutlined, GlobalOutlined, PhoneFilled } from '@ant-design/icons';
 
 const MortgageEval = (props) => {
   if (props.property.mortgaged === 1) {
@@ -7,6 +8,13 @@ const MortgageEval = (props) => {
       <Tag color="error">mortgaged</Tag>
     );
   }
+}
+
+const PropertyIcon = (props) => {
+  if (props.property.propName.indexOf('Airport') !== -1) return <RocketOutlined rotate={45}/>;
+  else if (props.property.propName.indexOf('Internet') !== -1) return <GlobalOutlined />;
+  else if (props.property.propName.indexOf('Cell') !== -1) return <PhoneFilled rotate={105}/>;
+  else return <Avatar style={{ backgroundColor: props.property.color }}/>;
 }
 
 const PropertyList = (player) => {
@@ -29,14 +37,17 @@ const PropertyList = (player) => {
     //     <h3>No properties found</h3>
     //   )
     // }
+
     return (
       <List
+          size="small"
           itemLayout="horizontal"
           dataSource={properties}
           renderItem={(property) => (
             <List.Item>
               <List.Item.Meta
-                avatar={<Avatar style={{ backgroundColor: property.color }} />}
+                avatar=<PropertyIcon property={property}/>
+                /* avatar={<Avatar style={{ backgroundColor: property.color }} />} */
                 title={property.propName}
                 /* description={`$${property.price.toLocaleString('en-US')}`} */
                 description=<MortgageEval property={property}/>

@@ -152,14 +152,20 @@ app.post('/players/*/pay_rent', async (req, res) => {
   let numHouses = propertyData[0]['numHouses'];
   let rent = 0;
 
-  if (req.body.mortgaged === 1) {
+  if (propertyData[0]['mortgaged'] === 1) {
     res.send(false);
     return;
   }
   if (req.body.diceRoll !== null) {
-    let results = await database.query(`SELECT COUNT(propName) count FROM Ownership NATURAL JOIN Properties WHERE playerName="${propertyData[0]['playerName']}" AND propName LIKE '%Service%';`);
-    if (results[0]['count'] === 1) rent = req.body.diceRoll * 40000
-    else rent = req.body.diceRoll * 100000
+    if (req.body.diceRoll === 0) {
+      let results = await database.query(`SELECT COUNT(propName) count FROM Ownership NATURAL JOIN Properties WHERE playerName="${propertyData[0]['playerName']}" AND propName LIKE '%Airport%';`);
+      rent = Math.round(250000 * Math.pow(2, results[0]['count'] - 1));
+    }
+    else {
+      let results = await database.query(`SELECT COUNT(propName) count FROM Ownership NATURAL JOIN Properties WHERE playerName="${propertyData[0]['playerName']}" AND propName LIKE '%Service%';`);
+      if (results[0]['count'] === 1) rent = req.body.diceRoll * 40000
+      else rent = req.body.diceRoll * 100000
+    }
   }
   else if (numHouses === 0) rent = propertyData[0]['rent'];
   else if (numHouses < 5) rent = propertyData[0][numHouses + 'hRent'];

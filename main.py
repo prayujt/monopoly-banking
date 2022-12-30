@@ -65,7 +65,10 @@ def match_property(owned=False, buying=False):
         return None
     if index == '' and len(possible_matches) == 1:
         return possible_matches[0]
-    if index == '' or int(index) <= 0 or int(index) > len(possible_matches):
+    try:
+        if index == '' or int(index) <= 0 or int(index) > len(possible_matches):
+            return match_property(owned, buying)
+    except Exception:
         return match_property(owned, buying)
 
     return possible_matches[int(index) - 1]
@@ -163,6 +166,9 @@ while True:
                 roll = int(input('What was the dice roll? '))
             except Exception:
                 print('Not a valid value!')
+
+        if 'Airport' in property_:
+            roll = 0
 
         player = get_player(landed=True)
         if player is None:
