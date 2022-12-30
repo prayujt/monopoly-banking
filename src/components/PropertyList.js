@@ -19,9 +19,7 @@ const PropertyIcon = (props) => {
 
 const Property = (props) => {
   if (props.event.properties === undefined || props.property.propName === undefined) return;
-  console.log(props.event.properties);
-  console.log(props.property.propName);
-  let color = props.event.properties.indexOf(props.property.propName) !== -1 ? "#EFEEEC" : "#FFFFFF"
+  let color = props.event.properties.indexOf(props.property.propName) !== -1 ? "#EFEEEC" : "#FFFFFF";
   return (
     <List.Item style={{ backgroundColor: color }}>
       <List.Item.Meta
